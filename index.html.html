@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Great Animal Safari - 4th Grade English</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        .card-flip { perspective: 1000px; }
+        .card-inner { transition: transform 0.6s; transform-style: preserve-3d; }
+        .card-flip:hover .card-inner, .card-flip.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { backface-visibility: hidden; }
+        .card-back { transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-yellow-100 via-green-100 to-blue-200 min-h-screen text-gray-800 p-4">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- HEADER -->
+        <header class="text-center my-6">
+            <h1 class="text-4xl md:text-5xl font-bold text-emerald-600 drop-shadow-md">🦁 The Great Animal Safari 🦒</h1>
+            <p class="text-lg text-gray-600 mt-2">Learn Wild & Domestic Animals in English! (4th Grade)</p>
+        </header>
+
+        <!-- WELCOME SCREEN -->
+        <div id="welcome-screen" class="bg-white rounded-3xl shadow-xl p-8 text-center max-w-md mx-auto border-4 border-emerald-400">
+            <div class="text-6xl mb-4">🐯</div>
+            <h2 class="text-2xl font-bold text-emerald-700 mb-4">Welcome, Explorer!</h2>
+            <p class="text-gray-600 mb-6">What is your name?</p>
+            <input type="text" id="student-name" placeholder="Enter your name..." class="w-full px-4 py-3 border-2 border-emerald-300 rounded-2xl text-center text-lg focus:outline-none focus:border-emerald-500 mb-6">
+            <button onclick="startSafari()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-8 py-3 rounded-full text-lg shadow-lg transition transform hover:scale-105">
+                Start Safari! 🚀
+            </button>
+        </div>
+
+        <!-- MAIN GAME CONTAINER (Hidden initially) -->
+        <div id="game-container" class="hidden space-y-8">
+            <!-- Navigation Tabs -->
+            <div class="flex justify-center gap-4 flex-wrap">
+                <button onclick="switchTab('flashcards')" id="tab-btn-flashcards" class="px-6 py-2 rounded-full font-bold bg-emerald-500 text-white shadow">📚 Meet Animals</button>
+                <button onclick="switchTab('sorting')" id="tab-btn-sorting" class="px-6 py-2 rounded-full font-bold bg-white text-emerald-600 shadow border-2 border-emerald-400">🏡 Sorting Game</button>
+                <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="px-6 py-2 rounded-full font-bold bg-white text-emerald-600 shadow border-2 border-emerald-400">❓ Fun Quiz</button>
+            </div>
+
+            <!-- SECTION 1: FLASHCARDS -->
+            <div id="section-flashcards" class="bg-white/80 backdrop-blur rounded-3xl p-6 shadow-xl border-4 border-emerald-300">
+                <h2 class="text-2xl font-bold text-center text-emerald-700 mb-6">Click cards to flip and learn! 🐾</h2>
+                <div class="flex justify-center gap-4 mb-6">
+                    <button onclick="filterAnimals('all')" class="px-4 py-1 bg-emerald-100 text-emerald-800 rounded-full font-semibold">All</button>
+                    <button onclick="filterAnimals('domestic')" class="px-4 py-1 bg-blue-100 text-blue-800 rounded-full font-semibold">🏡 Domestic</button>
+                    <button onclick="filterAnimals('wild')" class="px-4 py-1 bg-amber-100 text-amber-800 rounded-full font-semibold">🌳 Wild</button>
+                </div>
+                <div id="flashcards-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <!-- Dynamic Flashcards inserted via JS -->
+                </div>
+            </div>
+
+            <!-- SECTION 2: SORTING GAME -->
+            <div id="section-sorting" class="hidden bg-white/80 backdrop-blur rounded-3xl p-6 shadow-xl border-4 border-blue-300">
+                <h2 class="text-2xl font-bold text-center text-blue-700 mb-2">Safari Sorting Game 🏕️</h2>
+                <p class="text-center text-gray-600 mb-6">Click or Drag animals to their correct home!</p>
+                
+                <div class="flex justify-center gap-4 mb-6" id="animal-pool">
+                    <!-- Animals to sort -->
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border-4 border-dashed border-blue-400 rounded-3xl p-6 text-center bg-blue-50 min-h-[200px]" ondragover="allowDrop(event)" ondrop="dropAnimal(event, 'domestic')">
+                        <h3 class="text-xl font-bold text-blue-800 mb-4">🏡 Farm / Domestic Animals</h3>
+                        <div id="drop-domestic" class="flex flex-wrap gap-3 justify-center"></div>
+                    </div>
+                    <div class="border-4 border-dashed border-amber-400 rounded-3xl p-6 text-center bg-amber-50 min-h-[200px]" ondragover="allowDrop(event)" ondrop="dropAnimal(event, 'wild')">
+                        <h3 class="text-xl font-bold text-amber-800 mb-4">🌳 Jungle / Wild Animals</h3>
+                        <div id="drop-wild" class="flex flex-wrap gap-3 justify-center"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: QUIZ -->
+            <div id="section-quiz" class="hidden bg-white/80 backdrop-blur rounded-3xl p-6 shadow-xl border-4 border-purple-300 max-w-2xl mx-auto">
+                <div id="quiz-content">
+                    <!-- Quiz loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let studentName = "";
+        
+        const animals = [
+            { name: "Dog", type: "domestic", emoji: "🐶", desc: "Man's best friend!" },
+            { name: "Cat", type: "domestic", emoji: "🐱", desc: "Loves to catch mice and sleep!" },
+            { name: "Cow", type: "domestic", emoji: "🐮", desc: "Gives us fresh milk!" },
+            { name: "Sheep", type: "domestic", emoji: "🐑", desc: "Provides warm wool!" },
+            { name: "Lion", type: "wild", emoji: "🦁", desc: "The king of the jungle!" },
+            { name: "Elephant", type: "wild", emoji: "🐘", desc: "Has a very long trunk!" },
+            { name: "Monkey", type: "wild", emoji: "🐵", desc: "Loves climbing trees and eating bananas!" },
+            { name: "Zebra", type: "wild", emoji: "🦓", desc: "Has black and white stripes!" }
+        ];
+
+        const quizQuestions = [
+            {
+                question: "Which one of these is a WILD animal?",
+                options: ["Dog", "Lion", "Cow", "Cat"],
+                answer: 1
+            },
+            {
+                question: "What do we call a domestic animal that gives us milk?",
+                options: ["Elephant", "Zebra", "Cow", "Monkey"],
+                answer: 2
+            },
+            {
+                question: "Which animal is known as 'The king of the jungle'?",
+                options: ["Lion", "Sheep", "Dog", "Cat"],
+                answer: 0
+            },
+            {
+                question: "Which animal has black and white stripes?",
+                options: ["Cow", "Zebra", "Sheep", "Dog"],
+                answer: 1
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let score = 0;
+
+        function startSafari() {
+            const nameInput = document.getElementById("student-name").value.trim();
+            if (!nameInput) {
+                alert("გთხოვთ შეიყვანოთ თქვენი სახელი! / Please enter your name!");
+                return;
+            }
+            studentName = nameInput;
+            document.getElementById("welcome-screen").classList.add("hidden");
+            document.getElementById("game-container").classList.remove("hidden");
+            initFlashcards();
+            initSorting();
+            initQuiz();
+        }
+
+        function switchTab(tab) {
+            ['flashcards', 'sorting', 'quiz'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${t}`).className = "px-6 py-2 rounded-full font-bold bg-white text-emerald-600 shadow border-2 border-emerald-400";
+            });
+            document.getElementById(`section-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tab}`).className = "px-6 py-2 rounded-full font-bold bg-emerald-500 text-white shadow";
+        }
+
+        function initFlashcards(filter = 'all') {
+            const grid = document.getElementById("flashcards-grid");
+            grid.innerHTML = "";
+            const filtered = filter === 'all' ? animals : animals.filter(a => a.type === filter);
+            
+            filtered.forEach(animal => {
+                grid.innerHTML += `
+                    <div class="card-flip h-48 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner relative w-full h-full text-center rounded-2xl shadow-md">
+                            <div class="card-front absolute w-full h-full bg-white rounded-2xl flex flex-col items-center justify-center border-2 border-emerald-200 p-4">
+                                <span class="text-5xl mb-2">${animal.emoji}</span>
+                                <h3 class="text-xl font-bold text-emerald-700">${animal.name}</h3>
+                                <span class="text-xs text-gray-400 mt-2">Click to flip 🔄</span>
+                            </div>
+                            <div class="card-back absolute w-full h-full bg-emerald-500 text-white rounded-2xl flex flex-col items-center justify-center p-4">
+                                <span class="text-2xl font-bold mb-1">${animal.name}</span>
+                                <p class="text-sm">${animal.desc}</p>
+                                <span class="text-xs bg-emerald-600 px-2 py-1 rounded-full mt-2 uppercase">${animal.type}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterAnimals(type) {
+            initFlashcards(type);
+        }
+
+        function initSorting() {
+            const pool = document.getElementById("animal-pool");
+            pool.innerHTML = "";
+            animals.forEach((animal, index) => {
+                pool.innerHTML += `
+                    <div draggable="true" ondragstart="drag(event)" id="anim-${index}" data-type="${animal.type}" class="bg-white px-4 py-2 rounded-xl shadow border-2 border-gray-200 cursor-grab flex items-center gap-2 font-bold text-lg">
+                        <span>${animal.emoji}</span> ${animal.name}
+                    </div>
+                `;
+            });
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+
+        function dropAnimal(ev, targetType) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const element = document.getElementById(data);
+            const animalType = element.getAttribute("data-type");
+
+            if (animalType === targetType) {
+                element.className = "bg-green-100 text-green-800 px-3 py-1 rounded-lg font-bold flex items-center gap-1 shadow-sm";
+                ev.currentTarget.querySelector('div').appendChild(element);
+            } else {
+                alert("Oops! Try the other home! 🛑");
+            }
+        }
+
+        function initQuiz() {
+            if (currentQuizIndex < quizQuestions.length) {
+                let q = quizQuestions[currentQuizIndex];
+                let html = `
+                    <h3 class="text-xl font-bold text-purple-700 mb-4">Question ${currentQuizIndex + 1} of ${quizQuestions.length}</h3>
+                    <p class="text-lg font-semibold mb-6">${q.question}</p>
+                    <div class="space-y-3">
+                `;
+                q.options.forEach((opt, idx) => {
+                    html += `<button onclick="checkAnswer(${idx})" class="w-full text-left px-4 py-3 bg-purple-50 hover:bg-purple-100 border-2 border-purple-200 rounded-xl font-semibold transition">${opt}</button>`;
+                });
+                html += `</div>`;
+                document.getElementById("quiz-content").innerHTML = html;
+            } else {
+                document.getElementById("quiz-content").innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="text-6xl mb-4">🏆</div>
+                        <h3 class="text-2xl font-bold text-purple-700 mb-2">Great job, ${studentName}!</h3>
+                        <p class="text-lg text-gray-600 mb-6">You finished the Safari Quiz with a score of ${score} / ${quizQuestions.length}!</p>
+                        <button onclick="resetQuiz()" class="bg-purple-600 text-white font-bold px-6 py-2 rounded-full shadow hover:bg-purple-700">Play Again 🔄</button>
+                    </div>
+                `;
+            }
+        }
+
+        function checkAnswer(selectedIdx) {
+            let q = quizQuestions[currentQuizIndex];
+            if (selectedIdx === q.answer) {
+                score++;
+                alert("Correct! 🎉 Excellent job!");
+            } else {
+                alert("Not quite right! Keep trying! 💪");
+            }
+            currentQuizIndex++;
+            initQuiz();
+        }
+
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            score = 0;
+            initQuiz();
+        }
+    </script>
+</body>
+</html>
